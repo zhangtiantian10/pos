@@ -6,41 +6,31 @@ function printReceipt(inputs) {
 
 function buildCartItems(inputs) {
   let cartItems = [];
+  const allItems = loadAllItems();
 
   inputs.forEach((input) => {
     let inputArray = input.split('-');
-    if(inputArray.length != 1){
-      cartItems = searchSameBarcode(cartItems, inputArray[0], parseInt(inputArray[1]));
+    let count;
+    if(inputArray.length === 2){
+      count = parseInt(inputArray[1]);
     } else {
-      cartItems = searchSameBarcode(cartItems, inputArray[0], 1);
+      count = 1;
+    }
+
+    const item = allItems.find((item) => {
+      return item.barcode === inputArray[0];
+    });
+    
+    var cartItem = cartItems.find((cartItem) => {
+      return inputArray[0] === cartItem.item.barcode;
+    });
+
+    if(cartItem) {
+      cartItem.count += count;
+    } else {
+      cartItems.push({item: item , count: count});
     }
   });
 
   return cartItems;
-}
-
-function searchSameBarcode(cartItems, barcode, count) {
-  let item = searchBarcodeInAllItems(barcode);
-
-  let findBarcode = cartItems.find((cartItem) => {
-    return barcode === cartItem.item.barcode;
-  });
-
-  if(findBarcode) {
-    cartItems[cartItems.indexOf(findBarcode)].count += count;
-  } else {
-    cartItems.push({item: item , count: count});
-  }
-
-  return cartItems;
-}
-
-
-function searchBarcodeInAllItems(barcode) {
-  const allItems = loadAllItems();
-
-  return allItems.find((item) => {
-    return item.barcode === barcode;
-  });
-
 }

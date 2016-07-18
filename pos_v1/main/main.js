@@ -6,24 +6,20 @@ function printReceipt(inputs) {
 
 function buildCartItems(inputs) {
   let cartItems = [];
-  const allItems = loadAllItems();
 
-  for (input of inputs) {
-    const inputArray = input.split('-');
-    const barcode = inputArray[0];
-    const count = inputArray.length === 2 ? parseInt(inputArray[1]) : 1;
+  for(let input of inputs) {
+    let splitedInput = input.split('-');
+    let barcode = splitedInput[0];
+    let count = parseFloat(splitedInput[1] || 1);
 
-    const item = allItems.find((item) => {
-      return item.barcode === barcode;
-    });
-
-    const cartItem = cartItems.find((cartItem) => {
-      return cartItem.item.barcode === barcode;
-    });
+    let cartItem = cartItems.find(cartItem => cartItem.item.barcode === barcode);
 
     if(cartItem) {
       cartItem.count += count;
     } else {
+      let allItems = loadAllItems();
+      let item = allItems.find(item => item.barcode === barcode);
+
       cartItems.push({item: item, count: count});
     }
   }

@@ -10,25 +10,21 @@ function buildCartItems(inputs) {
 
   inputs.forEach((input) => {
     let inputArray = input.split('-');
-    let count;
-    if(inputArray.length === 2){
-      count = parseInt(inputArray[1]);
-    } else {
-      count = 1;
-    }
+    const barcode = inputArray[0];
+    let count = inputArray.length === 2 ? parseInt(inputArray[1]) : 1;
 
     const item = allItems.find((item) => {
-      return item.barcode === inputArray[0];
+      return item.barcode === barcode;
     });
-    
-    var cartItem = cartItems.find((cartItem) => {
-      return inputArray[0] === cartItem.item.barcode;
+
+    let cartItem = cartItems.find((cartItem) => {
+      return cartItem.item.barcode === barcode;
     });
 
     if(cartItem) {
       cartItem.count += count;
     } else {
-      cartItems.push({item: item , count: count});
+      cartItems.push({item: item, count: count});
     }
   });
 

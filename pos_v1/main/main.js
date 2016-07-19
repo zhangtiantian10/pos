@@ -25,24 +25,26 @@ function buildCartItems(tags) {
 }
 
 function buildReceiptItems(cartItems) {
-  let receiptItems = [];
-  for(let cartItem of cartItems) {
-    let promotions = loadPromotions();
+  let promotions = loadPromotions();
 
-    let promotion = promotions.find(promotion => promotion.type === 'BUY_TWO_GET_ONE_FREE');
+  return cartItems.map((cartItem) => {
+    let promotion = promotions.find(promotion => promotion.barcodes.includes(cartItem.item.barcode));
 
-    let subTotal, saveTotal;
-    let price = cartItem.item.price;
-    if(promotion) {
-      subTotal = price * (cartItem.count - parseInt(cartItem.count / 3));
-      saveTotal = price * parseInt(cartItem.count / 3);
-    } else {
-      subTotal = price * cartItem.count;
-      saveTotal = 0;
-    }
+    let promotionType = promotion ? promotion.type : '';
 
-    receiptItems.push({cartItem: cartItem, subTotal: subTotal, savedTotal: saveTotal});
+    let {subTotal, savedTotal} = discount(cartItem, promotionType);
+
+    return {cartItem, subTotal, savedTotal};
+  });
+}
+
+function discount(cartItem, promotionTYpe) {
+  let subTotal = cartItem.item.price * cartItem.count;
+  let savedTotal = 0;
+  if(promotionTYpe === 'BUY_TWO_GET_ONE_FREE') {
+    savedTotal = cartItem.item.price * parseInt(cartItem.count / 3);
+    subTotal -= savedTotal;
   }
 
-  return receiptItems;
+  return {savedTotal, subTotal};
 }
